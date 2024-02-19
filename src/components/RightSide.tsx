@@ -1,29 +1,40 @@
 "use client";
 import { Context } from "@/providers/ContextProvider";
-import { useContext } from "react";
-import date from "date-and-time";
+import { useContext, useEffect } from "react";
+import { format } from "date-fns";
 import { Input } from "./ui/input";
 import { TodoTable } from "./TodoTable";
 import { v4 as id } from "uuid";
-
+import toast, { Toaster } from "react-hot-toast";
+import { DatePicker } from "./DatePicker";
 const RightSide = () => {
   const context = useContext(Context);
   const now = new Date();
-  // context?.categoryFilter(context?.category);
+  const todaysDate = format(now, "MMM dd, yyyy | hh:mm a");
+
+  useEffect(() => {
+    context?.categoryFilter(context?.category);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [context?.todos]);
+
   return (
     <>
       <div
         className={`border-2 p-3 rounded min-h-fit ${
-          context?.todos.length == 0 && "h-full"
+          context?.catTodos.length == 0 && "h-full"
         }`}
       >
-        <div className="flex justify-between mb-2">
-          {context?.category}
+        <div className="flex justify-between mb-2 font-bold ml-1">
+          {context?.category
+            ? context?.category
+            : context?.categories.length! > 0
+            ? "All"
+            : ""}
 
-          <div>{date.format(now, "ddd, MMM DD YYYY")}</div>
+          <div>{todaysDate}</div>
         </div>
-
         <Input
+          autoFocus
           type="text"
           placeholder="todo"
           value={context?.text}
@@ -32,46 +43,79 @@ const RightSide = () => {
             context?.setText(e.target.value);
           }}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              context?.setTodos([
-                ...context.todos,
+            if (e.key === "Enter" && context?.text.length! > 0) {
+              if (context?.categories.length === 0) {
+                toast.error("you must create a category first", {
+                  style: {
+                    backgroundColor: "transparent",
+                    color: "red",
+                    borderStyle: "solid",
+                    borderWidth: "1px",
+                    borderColor: "white",
+                  },
+                  duration: 1000,
+                  position: "top-right",
+                });
+                return;
+              }
+              if (context?.category.length! === 0) {
+                toast.error("select a category", {
+                  style: {
+                    backgroundColor: "transparent",
+                    color: "red",
+                    borderStyle: "solid",
+                    borderWidth: "1px",
+                    borderColor: "white",
+                  },
+                  duration: 1000,
+                  position: "top-right",
+                });
+                return;
+              }
+              context?.setTodos((task) => [
+                ...task,
                 {
                   text: context.text,
                   category: context.category,
                   completed: false,
                   id: id(),
+                  start: context.startDate,
+                  end: context.endDate,
                 },
               ]);
-              console.log(context?.category);
 
-              // console.log(context?.categoryFilter(context.category));
-              // console.log(context?.catTodos);
+              context?.categoryFilter(context.category);
               context?.setText("");
-              // if (context?.category === "All" || context?.category) {
-              //   context.categoryFilter("All");
-              // }
             }
           }}
         />
+        <div className="flex">
+          <DatePicker
+            date={context!.startDate}
+            setDate={context!.setStartDate}
+            open={context!.openStart}
+            setOpen={context!.setOpenStart}
+          />
+          <DatePicker
+            date={context!.endDate}
+            setDate={context!.setEndDate}
+            open={context!.openEnd}
+            setOpen={context!.setOpenEnd}
+          />
+        </div>
       </div>
-      {context?.todos.length == 0 ? (
-        // <>{context.categoryFilter("All")}</>
+      {context?.catTodos.length == 0 ? (
         <></>
       ) : (
-        <div className="border-2 rounded overflow-y-scroll">
+        <div
+          className={`border-2 rounded overflow-y-scroll ${
+            context?.catTodos.length && "h-full"
+          }`}
+        >
           <TodoTable />
         </div>
-
-        // <ul className="border-2 max-h-full p-3 flex flex-col gap-2 overflow-y-scroll">
-        //   {context?.todos.map((todo) => {
-        //     return (
-        //       <li key={todo} className="">
-        //         {todo}
-        //       </li>
-        //     );
-        //   })}
-        // </ul>
       )}
+      <Toaster />
     </>
   );
 };

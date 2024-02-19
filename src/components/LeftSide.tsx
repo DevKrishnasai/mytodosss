@@ -25,18 +25,32 @@ const LeftSide = () => {
         <div className="mb-2 text-left text-lg font-extrabold rounded-full">
           Categories
         </div>
+        {context.categories.length > 0 && (
+          <div
+            className={`mb-1 py-1 text-left cursor-pointer hover:font-extrabold hover:first-letter:text-red-800  transition-all ${
+              context.category === "" &&
+              "font-extrabold first-letter:text-red-800"
+            }`}
+            onClick={() => {
+              context.setCategory("");
+              context.setCatTodos(context.todos);
+            }}
+          >
+            All
+          </div>
+        )}
         <ul className=" overflow-auto">
           {context.categories.map((item, index) => {
             return (
               <li
-                className={`mb-1 py-1 text-left cursor-pointer hover:font-extrabold hover:first-letter:text-red-800  transition-all ${
+                className={`mb-1 pb-1 text-left cursor-pointer hover:font-extrabold hover:first-letter:text-red-800  transition-all ${
                   context.category === item &&
                   "font-extrabold first-letter:text-red-800"
                 }`}
                 key={index}
                 onClick={() => {
-                  context.setCategory((_) => item.toString());
-                  // context.categoryFilter(item.toString());
+                  context.setCategory(item.toString());
+                  context.categoryFilter(item.toString());
                 }}
               >
                 {item}
@@ -54,7 +68,6 @@ const LeftSide = () => {
         <IoAddSharp /> category
       </div>
       <Drawer open={context.open}>
-        {/* <DrawerTrigger>Open</DrawerTrigger> */}
         <DrawerContent className="pb-5 text-white bg-transparent flex justify-center items-center ">
           <DrawerHeader className="w-1/3 pt-7 flex flex-col justify-between items-center gap-4">
             <DrawerTitle>Add Category</DrawerTitle>
@@ -64,6 +77,14 @@ const LeftSide = () => {
                 placeholder="todo category"
                 className="bg-transparent text-white w-full "
                 onChange={(e) => context.setText(e.target.value)}
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && context.text.length > 0) {
+                    context.setCategories((cat) => [...cat, context.text]);
+                    context.setText("");
+                    context.setOpen(false);
+                  }
+                }}
               />
             </DrawerDescription>
             <div className="w-full flex gap-4">

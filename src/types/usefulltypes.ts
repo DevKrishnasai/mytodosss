@@ -11,9 +11,17 @@ export interface IContext {
   setOpenMenu: React.Dispatch<React.SetStateAction<boolean>>;
   todos: ITodo[];
   setTodos: React.Dispatch<React.SetStateAction<ITodo[]>>;
-  // catTodos: ITodo[];
-  // setCatTodos: React.Dispatch<React.SetStateAction<ITodo[]>>;
-  // categoryFilter: (item: string) => void;
+  catTodos: ITodo[];
+  setCatTodos: React.Dispatch<React.SetStateAction<ITodo[]>>;
+  categoryFilter: (item: string) => void;
+  startDate: Date;
+  setStartDate: React.Dispatch<React.SetStateAction<Date>>;
+  endDate: Date;
+  setEndDate: React.Dispatch<React.SetStateAction<Date>>;
+  openStart: boolean;
+  setOpenStart: React.Dispatch<React.SetStateAction<boolean>>;
+  openEnd: boolean;
+  setOpenEnd: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface ITodo {
@@ -21,4 +29,6 @@ export interface ITodo {
   text: string;
   completed: boolean;
   category: string;
+  start: Date;
+  end: Date;
 }
