@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { format } from "date-fns";
 import { Input } from "./ui/input";
 import { TodoTable } from "./TodoTable";
@@ -8,27 +8,33 @@ import toast, { Toaster } from "react-hot-toast";
 import { DatePicker } from "./DatePicker";
 import { Context } from "@/providers/ContextProvider";
 import { useAuth } from "@clerk/nextjs";
+import SmallLoading from "./SmallLoading";
 
 const RightSide = () => {
   const { userId } = useAuth();
   const context = useContext(Context);
   const now = new Date();
   const todaysDate = format(now, "MMM dd, yyyy | hh:mm a");
+  const [loading, setLoading] = useState(false);
 
   const fetchTodos = async () => {
     try {
+      setLoading(true);
       const response = await fetch(`/api/todo/${userId}`);
       const data = await response.json();
       context.setTodos(data.todos.todos);
       context.categoryFilter(context.category);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const postTodo = async () => {
     try {
       if (!context.text) return null;
+      setLoading(true);
       const response = await fetch("/api/todo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -70,6 +76,8 @@ const RightSide = () => {
         });
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -138,7 +146,7 @@ const RightSide = () => {
             }
           }}
         />
-        <div className="flex">
+        <div className="flex gap-2">
           <DatePicker
             date={context!.startDate}
             setDate={context!.setStartDate}
@@ -153,6 +161,7 @@ const RightSide = () => {
           />
         </div>
       </div>
+      {loading && <SmallLoading />}
       {context.catTodos.length == 0 ? (
         <></>
       ) : (

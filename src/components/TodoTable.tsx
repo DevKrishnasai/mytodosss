@@ -31,8 +31,30 @@ export function TodoTable() {
           completed: !todo.completed,
         }),
       });
-      if (response.status === 201) toast.success("Updated todo");
-      else toast.error("Failed to update todo");
+      if (response.status === 201)
+        toast.success("Updated todo", {
+          style: {
+            backgroundColor: "transparent",
+            color: "white",
+            borderStyle: "solid",
+            borderWidth: "1px",
+            borderColor: "white",
+          },
+          duration: 1000,
+          position: "top-center",
+        });
+      else
+        toast.error("Failed to update todo", {
+          style: {
+            backgroundColor: "transparent",
+            color: "red",
+            borderStyle: "solid",
+            borderWidth: "1px",
+            borderColor: "white",
+          },
+          duration: 1000,
+          position: "top-center",
+        });
     } catch (error) {
       console.log(error);
       toast.error("something went wrong");

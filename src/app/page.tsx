@@ -1,6 +1,6 @@
 import LeftSide from "@/components/LeftSide";
 import RightSide from "@/components/RightSide";
-import { auth, currentUser } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs";
 import { prisma } from "@/lib/db";
 
 export default async function Home() {
@@ -20,7 +20,7 @@ export default async function Home() {
   return (
     <div className="text-white h-screen w-1/2 mx-auto flex justify-center items-center">
       <div className="flex gap-3 w-full max-h-[80vh] ">
-        <div className="flex flex-col justify-between border-2 rounded p-8 z-0 min-h-fit">
+        <div className="relative flex flex-col justify-between border-2 rounded p-8 z-0 min-h-fit">
           <LeftSide />
         </div>
         <div className="flex-1 flex flex-col gap-3 z-0 w-full">

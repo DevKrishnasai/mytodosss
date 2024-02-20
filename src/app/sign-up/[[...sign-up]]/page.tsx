@@ -1,5 +1,6 @@
 import Loading from "@/components/Loading";
 import { SignUp, ClerkLoading, ClerkLoaded } from "@clerk/nextjs";
+import { neobrutalism } from "@clerk/themes";
 
 export default function Page() {
   console.log(ClerkLoading);
@@ -9,7 +10,11 @@ export default function Page() {
         <Loading />
       </ClerkLoading>
       <ClerkLoaded>
-        <SignUp />
+        <SignUp
+          appearance={{
+            baseTheme: neobrutalism,
+          }}
+        />
       </ClerkLoaded>
     </div>
   );
