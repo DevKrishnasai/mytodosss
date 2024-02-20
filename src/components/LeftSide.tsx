@@ -11,28 +11,74 @@ import {
 } from "@/components/ui/drawer";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { useAuth } from "@clerk/nextjs";
+import toast, { Toaster } from "react-hot-toast";
 
 const LeftSide = () => {
   const context = useContext(Context);
-  // useEffect(() => {
-  //   const todosCategories = async () => {
-  //     try {
-  //       // const response = await fetch("/api/todo");
-  //       // const data = await response.json();
-  //       context?.setCategories(categories);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   todosCategories();
-  //   context?.categoryFilter(context?.category);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [context?.todos, context?.text]);
-  // context.setCategories(categories);
-  // const fetchCategories = () => {
-  //   context.setCategories(categories);
-  // };
-  // fetchCategories();
+  const { userId } = useAuth();
+  const todosCategories = async () => {
+    try {
+      const response = await fetch(`/api/category/${userId}`);
+      const { categories } = await response.json();
+      context.setCategories(categories[0].categories);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const addCategory = async (category: string) => {
+    try {
+      const response = await fetch("/api/category", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+          category,
+        }),
+      });
+      if (response.status === 200)
+        toast.success("Added category successfully", {
+          style: {
+            backgroundColor: "transparent",
+            color: "white",
+            borderStyle: "solid",
+            borderWidth: "1px",
+            borderColor: "white",
+          },
+          duration: 1000,
+          position: "top-center",
+        });
+      else
+        toast.error("something went wrong", {
+          style: {
+            backgroundColor: "transparent",
+            color: "red",
+            borderStyle: "solid",
+            borderWidth: "1px",
+            borderColor: "white",
+          },
+          duration: 1000,
+          position: "top-center",
+        });
+    } catch (error) {
+      toast.error("Something went wrong", {
+        style: {
+          backgroundColor: "transparent",
+          color: "red",
+          borderStyle: "solid",
+          borderWidth: "1px",
+          borderColor: "white",
+        },
+        duration: 1000,
+        position: "top-right",
+      });
+    }
+  };
+
+  useEffect(() => {
+    todosCategories();
+  }, [context.categories.length]);
 
   return (
     <>
@@ -95,6 +141,7 @@ const LeftSide = () => {
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && context.text.length > 0) {
+                    addCategory(context.text);
                     context.setCategories((cat) => [...cat, context.text]);
                     context.setText("");
                     context.setOpen(false);
@@ -126,6 +173,7 @@ const LeftSide = () => {
           </DrawerHeader>
         </DrawerContent>
       </Drawer>
+      <Toaster />
     </>
   );
 };

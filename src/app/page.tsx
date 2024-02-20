@@ -1,7 +1,22 @@
 import LeftSide from "@/components/LeftSide";
 import RightSide from "@/components/RightSide";
+import { auth, currentUser } from "@clerk/nextjs";
+import { prisma } from "@/lib/db";
 
-export default function Home() {
+export default async function Home() {
+  const { userId } = auth();
+  const user = await prisma.user.findMany({
+    where: {
+      id: userId?.toString(),
+    },
+  });
+  if (user.length === 0 && userId !== undefined) {
+    await prisma.user.create({
+      data: {
+        id: userId!.toString(),
+      },
+    });
+  }
   return (
     <div className="text-white h-screen w-1/2 mx-auto flex justify-center items-center">
       <div className="flex gap-3 w-full max-h-[80vh] ">

@@ -7,18 +7,19 @@ import { v4 as id } from "uuid";
 import toast, { Toaster } from "react-hot-toast";
 import { DatePicker } from "./DatePicker";
 import { Context } from "@/providers/ContextProvider";
-import { ITodo } from "@/types/usefulltypes";
+import { useAuth } from "@clerk/nextjs";
 
 const RightSide = () => {
+  const { userId } = useAuth();
   const context = useContext(Context);
   const now = new Date();
   const todaysDate = format(now, "MMM dd, yyyy | hh:mm a");
 
   const fetchTodos = async () => {
     try {
-      const response = await fetch("/api/todo");
+      const response = await fetch(`/api/todo/${userId}`);
       const data = await response.json();
-      context.setTodos(data.todos);
+      context.setTodos(data.todos.todos);
       context.categoryFilter(context.category);
     } catch (error) {
       console.log(error);
@@ -28,11 +29,11 @@ const RightSide = () => {
   const postTodo = async () => {
     try {
       if (!context.text) return null;
-      await fetch("/api/todo", {
+      const response = await fetch("/api/todo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: "sai",
+          userId,
           id: id(),
           text: context.text,
           category: context.category,
@@ -43,6 +44,30 @@ const RightSide = () => {
       });
       fetchTodos();
       context.setText("");
+      if (response.status === 200)
+        toast.success("added todo successfully", {
+          style: {
+            backgroundColor: "transparent",
+            color: "white",
+            borderStyle: "solid",
+            borderWidth: "1px",
+            borderColor: "white",
+          },
+          duration: 1000,
+          position: "top-center",
+        });
+      else
+        toast.error("something went wrong", {
+          style: {
+            backgroundColor: "transparent",
+            color: "red",
+            borderStyle: "solid",
+            borderWidth: "1px",
+            borderColor: "white",
+          },
+          duration: 1000,
+          position: "top-center",
+        });
     } catch (error) {
       console.log(error);
     }
@@ -89,7 +114,7 @@ const RightSide = () => {
                     borderColor: "white",
                   },
                   duration: 1000,
-                  position: "top-right",
+                  position: "top-center",
                 });
                 return;
               }
@@ -103,7 +128,7 @@ const RightSide = () => {
                     borderColor: "white",
                   },
                   duration: 1000,
-                  position: "top-right",
+                  position: "top-center",
                 });
                 return;
               }
