@@ -1,5 +1,4 @@
 "use client";
-import { Context } from "@/providers/ContextProvider";
 import { useContext, useEffect } from "react";
 import { format } from "date-fns";
 import { Input } from "./ui/input";
@@ -7,27 +6,63 @@ import { TodoTable } from "./TodoTable";
 import { v4 as id } from "uuid";
 import toast, { Toaster } from "react-hot-toast";
 import { DatePicker } from "./DatePicker";
+import { Context } from "@/providers/ContextProvider";
+import { ITodo } from "@/types/usefulltypes";
+
 const RightSide = () => {
   const context = useContext(Context);
   const now = new Date();
   const todaysDate = format(now, "MMM dd, yyyy | hh:mm a");
 
+  const fetchTodos = async () => {
+    try {
+      const response = await fetch("/api/todo");
+      const data = await response.json();
+      context.setTodos(data.todos);
+      context.categoryFilter(context.category);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const postTodo = async () => {
+    try {
+      if (!context.text) return null;
+      await fetch("/api/todo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: "sai",
+          id: id(),
+          text: context.text,
+          category: context.category,
+          completed: false,
+          start: context.startDate,
+          end: context.endDate,
+        }),
+      });
+      fetchTodos();
+      context.setText("");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    context?.categoryFilter(context?.category);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [context?.todos]);
+    fetchTodos();
+  }, [context.todos.length]);
 
   return (
     <>
       <div
         className={`border-2 p-3 rounded min-h-fit ${
-          context?.catTodos.length == 0 && "h-full"
+          context.catTodos.length == 0 && "h-full"
         }`}
       >
         <div className="flex justify-between mb-2 font-bold ml-1">
-          {context?.category
-            ? context?.category
-            : context?.categories.length! > 0
+          {context.category
+            ? context.category
+            : context.categories.length! > 0
             ? "All"
             : ""}
 
@@ -72,18 +107,7 @@ const RightSide = () => {
                 });
                 return;
               }
-              context?.setTodos((task) => [
-                ...task,
-                {
-                  text: context.text,
-                  category: context.category,
-                  completed: false,
-                  id: id(),
-                  start: context.startDate,
-                  end: context.endDate,
-                },
-              ]);
-
+              postTodo();
               context?.categoryFilter(context.category);
               context?.setText("");
             }
@@ -97,14 +121,14 @@ const RightSide = () => {
             setOpen={context!.setOpenStart}
           />
           <DatePicker
-            date={context!.endDate}
-            setDate={context!.setEndDate}
-            open={context!.openEnd}
-            setOpen={context!.setOpenEnd}
+            date={context.endDate}
+            setDate={context.setEndDate}
+            open={context.openEnd}
+            setOpen={context.setOpenEnd}
           />
         </div>
       </div>
-      {context?.catTodos.length == 0 ? (
+      {context.catTodos.length == 0 ? (
         <></>
       ) : (
         <div

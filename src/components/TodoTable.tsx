@@ -1,3 +1,4 @@
+"use client";
 import {
   Table,
   TableBody,
@@ -25,7 +26,7 @@ export function TodoTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {context?.catTodos.map((todo) => (
+        {context.catTodos.map((todo) => (
           <TableRow
             key={todo.id}
             onClick={(e) => {

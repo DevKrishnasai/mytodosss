@@ -1,24 +1,39 @@
 "use client";
 import { Context } from "@/providers/ContextProvider";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { IoAddSharp } from "react-icons/io5";
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 
 const LeftSide = () => {
   const context = useContext(Context);
-  if (!context?.categories) return null;
-  // console.log(context);
+  // useEffect(() => {
+  //   const todosCategories = async () => {
+  //     try {
+  //       // const response = await fetch("/api/todo");
+  //       // const data = await response.json();
+  //       context?.setCategories(categories);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   todosCategories();
+  //   context?.categoryFilter(context?.category);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [context?.todos, context?.text]);
+  // context.setCategories(categories);
+  // const fetchCategories = () => {
+  //   context.setCategories(categories);
+  // };
+  // fetchCategories();
+
   return (
     <>
       <div className="">
@@ -28,7 +43,7 @@ const LeftSide = () => {
         {context.categories.length > 0 && (
           <div
             className={`mb-1 py-1 text-left cursor-pointer hover:font-extrabold hover:first-letter:text-red-800  transition-all ${
-              context.category === "" &&
+              context!.category === "" &&
               "font-extrabold first-letter:text-red-800"
             }`}
             onClick={() => {

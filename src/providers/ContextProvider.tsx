@@ -1,8 +1,35 @@
 "use client";
+import React, { createContext, useState } from "react";
 import { IContext, ITodo } from "@/types/usefulltypes";
-import { createContext, useState } from "react";
 
-export const Context = createContext<IContext | null>(null);
+// Define default values for context properties
+const defaultContextValues: IContext = {
+  categories: [],
+  setCategories: () => {},
+  category: "",
+  setCategory: () => {},
+  open: false,
+  setOpen: () => {},
+  text: "",
+  setText: () => {},
+  openMenu: false,
+  setOpenMenu: () => {},
+  todos: [],
+  setTodos: () => {},
+  catTodos: [],
+  setCatTodos: () => {},
+  categoryFilter: () => {},
+  startDate: new Date(),
+  setStartDate: () => {},
+  endDate: new Date(),
+  setEndDate: () => {},
+  openStart: false,
+  setOpenStart: () => {},
+  openEnd: false,
+  setOpenEnd: () => {},
+};
+
+export const Context = createContext<IContext>(defaultContextValues);
 
 const ContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [category, setCategory] = useState<string>("");
@@ -19,6 +46,10 @@ const ContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [openEnd, setOpenEnd] = useState<boolean>(false);
 
   const categoryFilter = (cat: string) => {
+    if (!cat) {
+      setCatTodos(todos);
+      return;
+    }
     const tasks = todos.filter((todo) => todo.category === cat);
     setCatTodos(tasks);
   };
@@ -27,6 +58,7 @@ const ContextProvider = ({ children }: { children: React.ReactNode }) => {
     <Context.Provider
       value={{
         categories,
+        setCategories,
         category,
         setCategory,
         open,
@@ -37,7 +69,6 @@ const ContextProvider = ({ children }: { children: React.ReactNode }) => {
         setOpenMenu,
         todos,
         setTodos,
-        setCategories,
         catTodos,
         setCatTodos,
         categoryFilter,

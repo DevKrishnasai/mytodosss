@@ -2,8 +2,6 @@ import LeftSide from "@/components/LeftSide";
 import RightSide from "@/components/RightSide";
 
 export default function Home() {
-  // console.log(date.format(new Date(), "hh:mm "));
-
   return (
     <div className="text-white h-screen w-1/2 mx-auto flex justify-center items-center">
       <div className="flex gap-3 w-full max-h-[80vh] ">

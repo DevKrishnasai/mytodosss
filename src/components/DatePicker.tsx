@@ -46,7 +46,7 @@ export function DatePicker({
           onDayClick={setDate}
           onSelect={() => setOpen(false)}
           initialFocus
-          className=""
+          fromDate={new Date()}
         />
       </PopoverContent>
     </Popover>
