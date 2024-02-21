@@ -14,6 +14,7 @@ import { format } from "date-fns";
 import { useAuth } from "@clerk/nextjs";
 import { ITodo } from "@/types/usefulltypes";
 import toast, { Toaster } from "react-hot-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function TodoTable({ fetchTodos }: { fetchTodos: () => Promise<void> }) {
   const { userId } = useAuth();
@@ -65,59 +66,77 @@ export function TodoTable({ fetchTodos }: { fetchTodos: () => Promise<void> }) {
 
   return (
     <>
-      <Table className="h-full">
-        <TableHeader>
-          <TableRow className="">
-            <TableHead>{/* <Checkbox /> */}</TableHead>
-            <TableHead>Start</TableHead>
-            <TableHead>End</TableHead>
-            <TableHead>Task</TableHead>
-            {context.category === "" && <TableHead>Category</TableHead>}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {context.catTodos.map((todo) => (
-            <TableRow
-              key={todo.id}
-              onClick={(e) => {
-                updateTodo(todo);
-                const task = context.todos.findIndex(
-                  (task) => task.id === todo.id
-                );
-                const tasks = context.todos;
-                tasks[task] = { ...tasks[task], completed: !todo.completed };
-                context.setTodos(tasks);
-                if (context.category === "") {
-                  context.setCategory("");
-                  context.categoryFilter("", context.todos);
-                  return;
-                } else {
-                  context.setCategory(context.category);
-                  context.categoryFilter(context.category);
-                }
-              }}
-              className="hover:bg-white hover:font-bold hover:text-black hover:border-black"
-            >
-              <TableCell className="w-5 ">
-                <Checkbox
-                  className="hover:border-black hover:border-2"
-                  {...(todo.completed ? { checked: true } : {})}
-                />
-              </TableCell>
-              <TableCell className="">{format(todo.start, "MMM dd")}</TableCell>
-              <TableCell className="text-left">
-                {format(todo.end, "MMM dd")}
-              </TableCell>
-              <TableCell className="max-w-32 text-wrap overflow-auto">
-                {todo.text}
-              </TableCell>
-              {context.category === "" && (
-                <TableCell>{todo.category}</TableCell>
-              )}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <Tabs
+        defaultValue="pending tasks"
+        className="flex flex-col justify-center items-center"
+      >
+        <TabsList className="bg-transparent border-2 border-t-0 ">
+          <TabsTrigger value="pending tasks">pending tasks</TabsTrigger>
+          <TabsTrigger value="completed tasks">completed tasks</TabsTrigger>
+        </TabsList>
+        <TabsContent value="pending tasks" className="w-full">
+          <Table className="h-full">
+            <TableHeader>
+              <TableRow className="">
+                <TableHead>{/* <Checkbox /> */}</TableHead>
+                <TableHead>Start</TableHead>
+                <TableHead>End</TableHead>
+                <TableHead>Task</TableHead>
+                {context.category === "" && <TableHead>Category</TableHead>}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {context.catTodos.map((todo) => (
+                <TableRow
+                  key={todo.id}
+                  onClick={(e) => {
+                    updateTodo(todo);
+                    const task = context.todos.findIndex(
+                      (task) => task.id === todo.id
+                    );
+                    const tasks = context.todos;
+                    tasks[task] = {
+                      ...tasks[task],
+                      completed: !todo.completed,
+                    };
+                    context.setTodos([...tasks]);
+                    if (context.category === "") {
+                      context.setCategory("");
+                      context.categoryFilter("", context.todos);
+                      return;
+                    } else {
+                      context.setCategory(context.category);
+                      context.categoryFilter(context.category, tasks);
+                    }
+                  }}
+                  className="hover:bg-white hover:font-bold hover:text-black hover:border-black"
+                >
+                  <TableCell className="w-5 ">
+                    <Checkbox
+                      className="hover:border-black hover:border-2"
+                      {...(todo.completed ? { checked: true } : {})}
+                    />
+                  </TableCell>
+                  <TableCell className="">
+                    {format(todo.start, "MMM dd")}
+                  </TableCell>
+                  <TableCell className="text-left">
+                    {format(todo.end, "MMM dd")}
+                  </TableCell>
+                  <TableCell className="max-w-32 text-wrap overflow-auto">
+                    {todo.text}
+                  </TableCell>
+                  {context.category === "" && (
+                    <TableCell>{todo.category}</TableCell>
+                  )}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TabsContent>
+        <TabsContent value="completed tasks">completed tasks</TabsContent>
+      </Tabs>
+
       <Toaster />
     </>
   );

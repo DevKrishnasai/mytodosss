@@ -320,8 +320,8 @@ const RightSide = () => {
       )}
       <Drawer open={context.open}>
         <DrawerContent className="pb-5 text-white bg-transparent flex justify-center items-center ">
-          <DrawerHeader className="w-1/3 pt-7 flex flex-col justify-between items-center gap-4">
-            <DrawerTitle>Add Category</DrawerTitle>
+          <DrawerHeader className="w-full lg:w-1/3  pt-7 flex flex-col justify-between items-center gap-4">
+            <DrawerTitle>Add a Category</DrawerTitle>
             <DrawerDescription className="w-full">
               <Input
                 type="text"

@@ -32,14 +32,14 @@ export function DatePicker({
         <Button
           variant={"outline"}
           className={cn(
-            "w-[150px] justify-start text-left font-normal bg-transparent",
+            "w-[150px] lg:w-[200px]  justify-center text-left font-normal bg-transparent",
             !date && "text-muted-foreground"
           )}
           onClick={() => setOpen((prev) => !prev)}
         >
           {/* <CalendarIcon className="mr-2 h-4 w-4" /> */}
           {name}
-          {" -"} {date ? format(date, "P") : <span>Pick a date</span>}
+          {" -"} {date ? format(date, "PP") : <span>Pick a date</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0 ">

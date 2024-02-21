@@ -23,7 +23,7 @@ export default async function Home() {
       {/* <div className="relative flex flex-col justify-between border-2 rounded p-8 z-0 min-h-fit">
           <LeftSide />
         </div> */}
-      <div className=" flex flex-col gap-3 z-0 w-[90%] lg:w-[50%] min-h-fit max-h-[90%]">
+      <div className=" flex flex-col gap-3 z-0 w-[98%] lg:w-[50%] min-h-fit max-h-[90%]">
         <RightSide />
       </div>
     </div>
