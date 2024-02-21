@@ -24,9 +24,11 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "./ui/drawer";
+import { LogOutIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const RightSide = () => {
-  const { userId } = useAuth();
+  const { userId, signOut } = useAuth();
   const context = useContext(Context);
   const now = new Date();
   const todaysDate = format(now, "MMM dd, yyyy | hh:mm a");
@@ -179,8 +181,17 @@ const RightSide = () => {
     todosCategories();
   }, []);
 
+  const router = useRouter();
+
   return (
     <>
+      <Button
+        variant="outline"
+        className={`absolute bottom-5 right-5 bg-transparent  `}
+        onClick={() => signOut(() => router.push("/sign-in"))}
+      >
+        <LogOutIcon size={15} className="mr-1" /> Sign out
+      </Button>
       <div
         className={`border-2 p-3 rounded min-h-fit ${
           context.catTodos.length == 0 && "h-full"
