@@ -14,7 +14,15 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
       userId: data.userId,
     },
   });
-  return NextResponse.json({ result }, { status: 200 });
+  const todos = await prisma.user.findFirst({
+    where: {
+      id: data.userId,
+    },
+    select: {
+      todos: true,
+    },
+  });
+  return NextResponse.json({ todos }, { status: 200 });
 };
 
 export const PUT = async (req: NextRequest) => {

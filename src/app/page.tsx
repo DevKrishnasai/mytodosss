@@ -18,8 +18,8 @@ export default async function Home() {
     });
   }
   return (
-    <div className="text-white h-screen w-1/2 mx-auto flex justify-center items-center">
-      <div className="flex gap-3 w-full max-h-[80vh] ">
+    <div className="text-white min-h-fit h-screen mx-6 flex justify-center items-center">
+      <div className="flex flex-col-reverse lg:flex-row gap-3 w-full max-h-[80vh] ">
         <div className="relative flex flex-col justify-between border-2 rounded p-8 z-0 min-h-fit">
           <LeftSide />
         </div>

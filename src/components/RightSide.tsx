@@ -23,7 +23,7 @@ const RightSide = () => {
       const response = await fetch(`/api/todo/${userId}`);
       const data = await response.json();
       context.setTodos(data.todos.todos);
-      context.categoryFilter(context.category);
+      context.categoryFilter(context.category || "", data.todos.todos);
     } catch (error) {
       console.log(error);
     } finally {
@@ -48,9 +48,21 @@ const RightSide = () => {
           end: context.endDate,
         }),
       });
-      fetchTodos();
+      const data = await response.json();
       context.setText("");
-      if (response.status === 200)
+      if (response.status === 200) {
+        context.setTodos((prev) => [
+          ...prev,
+          {
+            id: id(),
+            text: context.text,
+            category: context.category,
+            completed: false,
+            start: context.startDate,
+            end: context.endDate,
+          },
+        ]);
+        context.categoryFilter(context.category, data.todos.todos);
         toast.success("added todo successfully", {
           style: {
             backgroundColor: "transparent",
@@ -62,7 +74,7 @@ const RightSide = () => {
           duration: 1000,
           position: "top-center",
         });
-      else
+      } else
         toast.error("something went wrong", {
           style: {
             backgroundColor: "transparent",
@@ -83,7 +95,7 @@ const RightSide = () => {
 
   useEffect(() => {
     fetchTodos();
-  }, [context.todos.length]);
+  }, []);
 
   return (
     <>
@@ -161,8 +173,12 @@ const RightSide = () => {
           />
         </div>
       </div>
-      {loading && <SmallLoading />}
-      {context.catTodos.length == 0 ? (
+
+      {loading ? (
+        <div className="m-3">
+          <SmallLoading />
+        </div>
+      ) : context.catTodos.length === 0 ? (
         <></>
       ) : (
         <div
@@ -173,6 +189,7 @@ const RightSide = () => {
           <TodoTable />
         </div>
       )}
+
       <Toaster />
     </>
   );

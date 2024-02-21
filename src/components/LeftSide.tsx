@@ -90,7 +90,7 @@ const LeftSide = () => {
 
   useEffect(() => {
     todosCategories();
-  }, [context.categories.length]);
+  }, []);
 
   return (
     <>

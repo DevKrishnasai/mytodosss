@@ -45,13 +45,18 @@ const ContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [openStart, setOpenStart] = useState<boolean>(false);
   const [openEnd, setOpenEnd] = useState<boolean>(false);
 
-  const categoryFilter = (cat: string) => {
-    if (!cat) {
-      setCatTodos(todos);
+  const categoryFilter = (cat: string, list: ITodo[] = []) => {
+    if (cat === "" || cat === null || cat === undefined) {
+      setCatTodos([...list]);
       return;
     }
-    const tasks = todos.filter((todo) => todo.category === cat);
-    setCatTodos(tasks);
+    if (list.length === 0) {
+      const tasks = todos.filter((todo) => todo.category === cat);
+      setCatTodos(tasks);
+    } else {
+      const tasks = list.filter((todo) => todo.category === cat);
+      setCatTodos(tasks);
+    }
   };
 
   return (

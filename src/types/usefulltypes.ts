@@ -13,7 +13,7 @@ export interface IContext {
   setTodos: React.Dispatch<React.SetStateAction<ITodo[]>>;
   catTodos: ITodo[];
   setCatTodos: React.Dispatch<React.SetStateAction<ITodo[]>>;
-  categoryFilter: (item: string) => void;
+  categoryFilter: (item: string, list?: ITodo[]) => void;
   startDate: Date;
   setStartDate: React.Dispatch<React.SetStateAction<Date>>;
   endDate: Date;
