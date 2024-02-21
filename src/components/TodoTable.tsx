@@ -15,7 +15,7 @@ import { useAuth } from "@clerk/nextjs";
 import { ITodo } from "@/types/usefulltypes";
 import toast, { Toaster } from "react-hot-toast";
 
-export function TodoTable() {
+export function TodoTable({ fetchTodos }: { fetchTodos: () => Promise<void> }) {
   const { userId } = useAuth();
   const context = useContext(Context);
 
@@ -43,7 +43,7 @@ export function TodoTable() {
           duration: 1000,
           position: "top-center",
         });
-      else
+      else {
         toast.error("Failed to update todo", {
           style: {
             backgroundColor: "transparent",
@@ -55,6 +55,8 @@ export function TodoTable() {
           duration: 1000,
           position: "top-center",
         });
+        fetchTodos();
+      }
     } catch (error) {
       console.log(error);
       toast.error("something went wrong");
@@ -70,6 +72,7 @@ export function TodoTable() {
             <TableHead>Start</TableHead>
             <TableHead>End</TableHead>
             <TableHead>Task</TableHead>
+            {context.category === "" && <TableHead>Category</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -84,21 +87,33 @@ export function TodoTable() {
                 const tasks = context.todos;
                 tasks[task] = { ...tasks[task], completed: !todo.completed };
                 context.setTodos(tasks);
-                context.setCategory(todo.category);
-                context.categoryFilter(todo.category);
+                if (context.category === "") {
+                  context.setCategory("");
+                  context.categoryFilter("", context.todos);
+                  return;
+                } else {
+                  context.setCategory(context.category);
+                  context.categoryFilter(context.category);
+                }
               }}
-              className="hover:bg-white hover:text-black"
+              className="hover:bg-white hover:font-bold hover:text-black hover:border-black"
             >
-              <TableCell className="w-5">
+              <TableCell className="w-5 ">
                 <Checkbox
-                  {...(todo.completed ? { checked: true } : { disabled: true })}
+                  className="hover:border-black hover:border-2"
+                  {...(todo.completed ? { checked: true } : {})}
                 />
               </TableCell>
               <TableCell className="">{format(todo.start, "MMM dd")}</TableCell>
               <TableCell className="text-left">
                 {format(todo.end, "MMM dd")}
               </TableCell>
-              <TableCell className="">{todo.text}</TableCell>
+              <TableCell className="max-w-32 text-wrap overflow-auto">
+                {todo.text}
+              </TableCell>
+              {context.category === "" && (
+                <TableCell>{todo.category}</TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>

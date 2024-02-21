@@ -9,6 +9,21 @@ import { DatePicker } from "./DatePicker";
 import { Context } from "@/providers/ContextProvider";
 import { useAuth } from "@clerk/nextjs";
 import SmallLoading from "./SmallLoading";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "./ui/button";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "./ui/drawer";
 
 const RightSide = () => {
   const { userId } = useAuth();
@@ -26,6 +41,72 @@ const RightSide = () => {
       context.categoryFilter(context.category || "", data.todos.todos);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const todosCategories = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/category/${userId}`);
+      const { categories } = await response.json();
+      context.setCategories(categories[0].categories);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addCategory = async (category: string) => {
+    try {
+      setLoading(true);
+      const response = await fetch("/api/category", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+          category,
+        }),
+      });
+      if (response.status === 200) {
+        toast.success("Added category successfully", {
+          style: {
+            backgroundColor: "transparent",
+            color: "white",
+            borderStyle: "solid",
+            borderWidth: "1px",
+            borderColor: "white",
+          },
+          duration: 1000,
+          position: "top-center",
+        });
+        todosCategories();
+      } else
+        toast.error("something went wrong", {
+          style: {
+            backgroundColor: "transparent",
+            color: "red",
+            borderStyle: "solid",
+            borderWidth: "1px",
+            borderColor: "white",
+          },
+          duration: 1000,
+          position: "top-center",
+        });
+    } catch (error) {
+      toast.error("Something went wrong", {
+        style: {
+          backgroundColor: "transparent",
+          color: "red",
+          borderStyle: "solid",
+          borderWidth: "1px",
+          borderColor: "white",
+        },
+        duration: 1000,
+        position: "top-right",
+      });
     } finally {
       setLoading(false);
     }
@@ -95,6 +176,7 @@ const RightSide = () => {
 
   useEffect(() => {
     fetchTodos();
+    todosCategories();
   }, []);
 
   return (
@@ -104,7 +186,7 @@ const RightSide = () => {
           context.catTodos.length == 0 && "h-full"
         }`}
       >
-        <div className="flex justify-between mb-2 font-bold ml-1">
+        <div className="flex justify-between mb-2 font-bold ml-1 ">
           {context.category
             ? context.category
             : context.categories.length! > 0
@@ -113,63 +195,110 @@ const RightSide = () => {
 
           <div>{todaysDate}</div>
         </div>
-        <Input
-          autoFocus
-          type="text"
-          placeholder="todo"
-          value={context?.text}
-          className="bg-transparent border-x-0 border-t-0 focus:border-x-0 placeholder:text-white p-1 mb-2"
-          onChange={(e) => {
-            context?.setText(e.target.value);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && context?.text.length! > 0) {
-              if (context?.categories.length === 0) {
-                toast.error("you must create a category first", {
-                  style: {
-                    backgroundColor: "transparent",
-                    color: "red",
-                    borderStyle: "solid",
-                    borderWidth: "1px",
-                    borderColor: "white",
-                  },
-                  duration: 1000,
-                  position: "top-center",
-                });
+        <div className="flex">
+          <Input
+            autoFocus
+            type="text"
+            placeholder="todo"
+            value={context?.text}
+            className="bg-transparent border-x-0 placeholder:text-white p-1 mb-3 font-semibold"
+            onChange={(e) => {
+              context?.setText(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && context?.text.length! > 0) {
+                if (context?.categories.length === 0) {
+                  toast.error("you must create a category first", {
+                    style: {
+                      backgroundColor: "transparent",
+                      color: "red",
+                      borderStyle: "solid",
+                      borderWidth: "1px",
+                      borderColor: "white",
+                    },
+                    duration: 1000,
+                    position: "top-center",
+                  });
+                  return;
+                }
+                if (context?.category.length! === 0) {
+                  toast.error("select a category", {
+                    style: {
+                      backgroundColor: "transparent",
+                      color: "red",
+                      borderStyle: "solid",
+                      borderWidth: "1px",
+                      borderColor: "white",
+                    },
+                    duration: 1000,
+                    position: "top-center",
+                  });
+                  return;
+                }
+                postTodo();
+                context?.categoryFilter(context.category);
+                context?.setText("");
+              }
+            }}
+          />
+          <Select
+            onValueChange={(value) => {
+              if (value === "All") {
+                context.setCategory("");
+                context.categoryFilter("", context.todos);
                 return;
               }
-              if (context?.category.length! === 0) {
-                toast.error("select a category", {
-                  style: {
-                    backgroundColor: "transparent",
-                    color: "red",
-                    borderStyle: "solid",
-                    borderWidth: "1px",
-                    borderColor: "white",
-                  },
-                  duration: 1000,
-                  position: "top-center",
-                });
+              if (value === "create cat") {
+                context.setOpen(true);
+                context.setCategory("");
+
                 return;
               }
-              postTodo();
-              context?.categoryFilter(context.category);
-              context?.setText("");
-            }
-          }}
-        />
-        <div className="flex gap-2">
+              context.setCategory(value);
+              context.categoryFilter(value);
+            }}
+            value={context.category}
+            defaultValue={context.category === "" ? "All" : context.category}
+          >
+            <SelectTrigger className="w-[150px] bg-transparent border-x-0">
+              <SelectValue placeholder="select..." />
+            </SelectTrigger>
+            <SelectContent className=" bg-transparent bg-black opacity-90 text-white font-bold flex">
+              <SelectItem value="All" className="cursor-pointer">
+                All
+              </SelectItem>
+              {context.categories.map((category) => (
+                <SelectItem
+                  key={category.toString()}
+                  value={category.toString()}
+                  className="cursor-pointer"
+                >
+                  {category}
+                </SelectItem>
+              ))}
+              <SelectItem
+                value="create cat"
+                className="cursor-pointer bg-blue-700"
+              >
+                create
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex justify-center items-center gap-6">
           <DatePicker
             date={context!.startDate}
             setDate={context!.setStartDate}
             open={context!.openStart}
             setOpen={context!.setOpenStart}
+            name="From"
           />
           <DatePicker
             date={context.endDate}
             setDate={context.setEndDate}
             open={context.openEnd}
             setOpen={context.setOpenEnd}
+            name="To"
           />
         </div>
       </div>
@@ -186,10 +315,55 @@ const RightSide = () => {
             context?.catTodos.length && "h-full"
           }`}
         >
-          <TodoTable />
+          <TodoTable fetchTodos={fetchTodos} />
         </div>
       )}
-
+      <Drawer open={context.open}>
+        <DrawerContent className="pb-5 text-white bg-transparent flex justify-center items-center ">
+          <DrawerHeader className="w-1/3 pt-7 flex flex-col justify-between items-center gap-4">
+            <DrawerTitle>Add Category</DrawerTitle>
+            <DrawerDescription className="w-full">
+              <Input
+                type="text"
+                placeholder="todo category"
+                className="bg-transparent text-white w-full "
+                onChange={(e) => context.setText(e.target.value)}
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && context.text.length > 0) {
+                    addCategory(context.text);
+                    context.setCategories((cat) => [...cat, context.text]);
+                    context.setText("");
+                    context.setOpen(false);
+                  }
+                }}
+              />
+            </DrawerDescription>
+            <div className="w-full flex gap-4">
+              <Button
+                variant="ghost"
+                className="bg-white text-black w-1/2"
+                onClick={() => {
+                  if (!context.text) return null;
+                  addCategory(context.text);
+                  context.setOpen(false);
+                  context.setCategories((cat) => [...cat, context.text]);
+                  context.setText("");
+                }}
+              >
+                Add
+              </Button>
+              <Button
+                variant="destructive"
+                className="w-1/2"
+                onClick={() => context.setOpen(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </DrawerHeader>
+        </DrawerContent>
+      </Drawer>
       <Toaster />
     </>
   );

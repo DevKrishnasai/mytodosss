@@ -11,17 +11,19 @@ import {
 } from "@/components/ui/drawer";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { UserButton, useAuth } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import toast, { Toaster } from "react-hot-toast";
 import SmallLoading from "./SmallLoading";
 import { useRouter } from "next/navigation";
 import { LogOutIcon, PlusIcon } from "lucide-react";
+import ToolUpMenu from "./ToolUpMenu";
 
 const LeftSide = () => {
   const context = useContext(Context);
   const { userId, signOut } = useAuth();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
   const todosCategories = async () => {
     try {
       setLoading(true);
@@ -100,13 +102,17 @@ const LeftSide = () => {
         <>
           <Button
             variant="outline"
-            className="absolute bottom-2 right-7 bg-transparent"
+            className={`absolute lg:bottom-2 lg:right-7 bg-transparent  `}
             onClick={() => signOut(() => router.push("/sign-in"))}
           >
             <LogOutIcon size={15} className="mr-1" /> Sign out
           </Button>
           <div className="">
-            <div className="mb-2 text-left text-lg font-extrabold rounded-full">
+            <div
+              className={`mb-2 ${
+                context.categories.length === 0 && "mb-9"
+              } text-left text-lg font-extrabold rounded-full`}
+            >
               Categories
             </div>
             {context.categories.length > 0 && (
@@ -137,7 +143,7 @@ const LeftSide = () => {
                       context.categoryFilter(item.toString());
                     }}
                   >
-                    {item}
+                    <ToolUpMenu category={item.toString()} />
                   </li>
                 );
               })}

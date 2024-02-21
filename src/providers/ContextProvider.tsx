@@ -46,7 +46,7 @@ const ContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [openEnd, setOpenEnd] = useState<boolean>(false);
 
   const categoryFilter = (cat: string, list: ITodo[] = []) => {
-    if (cat === "" || cat === null || cat === undefined) {
+    if (cat === "") {
       setCatTodos([...list]);
       return;
     }

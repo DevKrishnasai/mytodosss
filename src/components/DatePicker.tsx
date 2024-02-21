@@ -18,11 +18,13 @@ export function DatePicker({
   setDate,
   open,
   setOpen,
+  name,
 }: {
   date: Date | undefined;
   setDate: React.Dispatch<React.SetStateAction<Date>> | undefined;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  name: string;
 }) {
   return (
     <Popover open={open}>
@@ -30,22 +32,22 @@ export function DatePicker({
         <Button
           variant={"outline"}
           className={cn(
-            "w-[280px] justify-start text-left font-normal bg-transparent",
+            "w-[150px] justify-start text-left font-normal bg-transparent",
             !date && "text-muted-foreground"
           )}
-          onClick={() => setOpen(true)}
+          onClick={() => setOpen((prev) => !prev)}
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "PPP") : <span>Pick a date</span>}
+          {/* <CalendarIcon className="mr-2 h-4 w-4" /> */}
+          {name}
+          {" -"} {date ? format(date, "P") : <span>Pick a date</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0  ">
+      <PopoverContent className="w-auto p-0 ">
         <Calendar
           mode="single"
           selected={date}
           onDayClick={setDate}
           onSelect={() => setOpen(false)}
-          initialFocus
           fromDate={new Date()}
         />
       </PopoverContent>
