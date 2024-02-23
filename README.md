@@ -1,6 +1,6 @@
 # Todo Application
 
-This is a Todo application built using Next.js and PostgreSQL database. It allows users to create, manage, and organize their tasks efficiently. The application is hosted on the cloud, providing users with accessibility from anywhere.
+This is a Todo application built using Next.js and PostgreSQL database. It allows users to create, manage, and organize their tasks efficiently. The application is hosted on the cloud(Vercel), providing users with accessibility from anywhere.
 
 ## Features
 
@@ -13,17 +13,28 @@ This is a Todo application built using Next.js and PostgreSQL database. It allow
 ## Technologies Used
 
 - **Frontend**: Next.js
-- **Backend**: PostgreSQL
-- **Authentication**: Google, GitHub, LinkedIn, Facebook
-- **UI**: Responsive design for optimal viewing on different devices
+- **Backend**: Next.js(API Routes)
+- **Database**: PostgreSQL
+- **Authentication**: Clerk (Google, GitHub, LinkedIn, Facebook)
+- **UI**: Shadcn (UI Library) Responsive design for optimal viewing on different devices
 
 ## Setup Instructions
 
 1. Clone the repository: `git clone https://github.com/your-username/todo-app.git`
 2. Install dependencies: `cd todo-app && npm install`
 3. Configure environment variables for database connection and authentication providers.
-4. Run the application: `npm run dev`
-5. Access the application at `http://localhost:3000`
+    ```
+    DATABASE_URL="postgresql://postgres:krishna@localhost:5432/todos?schema=public"
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+    CLERK_SECRET_KEY=
+    NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+    NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
+    NODE_ENV = ""
+    ```
+5. Run the application: `npm run dev`
+6. Access the application at `http://localhost:3000`
 
 ## Usage
 
@@ -35,13 +46,13 @@ This is a Todo application built using Next.js and PostgreSQL database. It allow
 
 ## Screenshots
 
-[Add screenshots of your application here to showcase its user interface and features.]
+![WhatsApp Image 2024-02-24 at 00 07 03_0ff65f6a](https://github.com/DevKrishnasai/mytodosss/assets/122152880/d7b877f8-71de-407e-9ad4-302877f98515)
+![WhatsApp Image 2024-02-24 at 00 02 47_0332a1ba](https://github.com/DevKrishnasai/mytodosss/assets/122152880/5be4ef18-974e-45dd-a060-9a2803b12a36)
+![WhatsApp Image 2024-02-24 at 00 05 11_36be491c](https://github.com/DevKrishnasai/mytodosss/assets/122152880/2816e1ec-6bad-4b5c-9ee9-1417bf947fc0)
+![WhatsApp Image 2024-02-24 at 00 06 40_718f9598](https://github.com/DevKrishnasai/mytodosss/assets/122152880/145e2c8b-cf7d-4b7d-98f4-c7e74306b1dc)
 
 ## Contributing
 
 Contributions are welcome! Feel free to submit bug reports, feature requests, or pull requests to help improve this project.
 
-## License
-
-[Include license information here.]
 
